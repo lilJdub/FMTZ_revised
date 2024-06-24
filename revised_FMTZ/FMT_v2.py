@@ -6,12 +6,17 @@ from datetime import datetime as dt
 from time import sleep
 from os import system
 
+import sys
 import threading
 import os
 import pyautogui
 
+#這份是接著上一份intern的code寫的，所以coding style有很多有出入的地方
+
+#pathway直接寫死成預設
 folder = "C:\Program Files\Geeks3D\FurMark2_x64\\"
 folderForBatch = "C:\Program Files\Geeks3D\FurMark2_x64\\"
+
 file = folder + 'start_benchmark.bat'
 #final_file
 final_file=folder + 'last_benchmark.bat'
@@ -103,15 +108,18 @@ def loopInput():
     return int(n)
 
 def inputData():
-    runmode = input('Select the Test mode [1: default setting, 2: customize]: ')
+    runmode = input('Select the Test mode [1: default setting, 2: customize, 3: long run]: ')
     if runmode == '1':
-        return 'FMT', 1800, 300, 4
+        return  1800, 300, 4
     elif runmode == '2':
-        return logNameInput(),runtimeInput(),idleInput(),loopInput()
+        return runtimeInput(),idleInput(),loopInput()
         # print("The log file name and the settings will be set by default when entering null:\nplatform name=FMT_[TimeTag], test duration=1800, idle=300, loops=4\n")
         # print("Press enter to run default value (log Name='default_log_name'/test duration=1800/idle duration=300/test loops=4)")
+    elif runmode == '3':
+        runFurMark(1)
+        sys.exit()
     else:
-        print(timeTag(), "Please enter 1 or 2!")
+        print(timeTag(), "Please enter 1,2 or 3!")
         return inputData()
     
 def check_resolution():
@@ -151,7 +159,7 @@ def runFurMark(lastflag):
         print(timeTag(), "Furmark starting error")
         return False
     
-def ssFurmark(timer,logName):
+def ssFurmark(timer):
     sleep(timer)
     
     # 取得執行檔的路徑
@@ -165,8 +173,7 @@ def ssFurmark(timer,logName):
         os.makedirs(screenshot_dir)
 
     # 拼接完整的檔案路徑
-    ss_name = os.path.join(screenshot_dir, logName +'_screenshot_' + datetime.now().strftime("%Y%m%d-%H%M%S") + '.png')
-
+    #ss_name = os.path.join(screenshot_dir, logName +'_screenshot_' + datetime.now().strftime("%Y%m%d-%H%M%S") + '.png')
     pyautogui.hotkey('win', 'printscreen')
 
     print("Screenshot saved!")
@@ -213,8 +220,8 @@ def main():
 
     width, height = check_resolution()
     if width and height:
-        logName, runtime, idle, loop = inputData()
-        print(logName, runtime, idle, loop)
+        runtime, idle, loop = inputData()
+        print(runtime, idle, loop)
 
         # Write batch file
         write_batch(runtime, width, height)
@@ -222,7 +229,7 @@ def main():
         for i in range(loop-1):    
              # 創建兩個線程
             thread1 = threading.Thread(target=runFurMark,args=(0,))
-            thread2 = threading.Thread(target=ssFurmark, args=(runtime-2,logName))
+            thread2 = threading.Thread(target=ssFurmark, args=(runtime-2,))
 
             # 啟動線程
             thread1.start()
@@ -237,7 +244,7 @@ def main():
             sleep(1)
         #最後一圈
         thread1 = threading.Thread(target=runFurMark,args=(1,))
-        thread2 = threading.Thread(target=ssFurmark, args=(runtime-2,logName))
+        thread2 = threading.Thread(target=ssFurmark, args=(runtime-2,))
         thread1.start()
         thread2.start()
 
