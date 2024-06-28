@@ -11,12 +11,12 @@ import threading
 import os
 import pyautogui
 
-#這份是接著上一份intern的code寫的，所以coding style有很多有出入的地方
+#這份是接著上一份intern的code寫的，所以coding style有很多有出入的地方，別見怪。
 
 #pathway直接寫死成預設
 folder = "C:\Program Files\Geeks3D\FurMark2_x64\\"
 folderForBatch = "C:\Program Files\Geeks3D\FurMark2_x64\\"
-
+#這份是預設的start批次檔
 file = folder + 'start_benchmark.bat'
 #final_file
 final_file=folder + 'last_benchmark.bat'
